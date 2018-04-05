@@ -12,7 +12,7 @@ namespace WeTodoApi.Controllers
     [Route("api/[controller]")]
     public class TodoController : Controller
     {
-        private readonly TodoContext  _context;
+        private readonly TodoContext _context;
 
         public TodoController(TodoContext context)
         {
@@ -32,7 +32,7 @@ namespace WeTodoApi.Controllers
             return _context.TodoItems.ToList();
         }
 
-        [HttpGet("{id}", Name ="GetTodo")]
+        [HttpGet("{id}", Name = "GetTodo")]
         public IActionResult GetbyId(long id)
         {
             var item = _context.TodoItems.FirstOrDefault(t => t.Id == id);
@@ -43,7 +43,20 @@ namespace WeTodoApi.Controllers
             return new ObjectResult(item);
         }
 
+        [HttpPost]
+        public IActionResult Create([FromBody] TodoItem item)
+        {
+            if (item == null)
+            {
+                return BadRequest();
+            }
 
+            _context.TodoItems.Add(item);
+            _context.SaveChanges();
+
+            return CreatedAtRoute("GetTodo", new { id = item.Id }, item);
+
+        }
 
     }
 }
